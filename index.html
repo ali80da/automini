@@ -3,90 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AutoMin WebApp</title>
-    <!-- اسکریپت رسمی تلگرام -->
+    <title>Routinet Mini App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        :root {
+            --bg-color: var(--tg-theme-bg-color, #ffffff);
+            --text-color: var(--tg-theme-text-color, #000000);
+            --hint-color: var(--tg-theme-hint-color, #999999);
+            --link-color: var(--tg-theme-link-color, #2481cc);
+            --button-color: var(--tg-theme-button-color, #2481cc);
+            --button-text-color: var(--tg-theme-button-text-color, #ffffff);
+            --secondary-bg: var(--tg-theme-secondary-bg-color, #f1f1f1);
+        }
+
         body {
-            /* استفاده از متغیرهای رنگی تلگرام برای هماهنگی کامل */
-            background-color: var(--tg-theme-bg-color, #fff);
-            color: var(--tg-theme-text-color, #000);
+            background-color: var(--bg-color);
+            color: var(--text-color);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
+            min-height: 100vh;
         }
-        .card {
-            background-color: var(--tg-theme-secondary-bg-color, #f0f0f0);
+
+        .header {
+            background-color: var(--button-color);
+            color: var(--button-text-color);
             padding: 20px;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 300px;
             text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        h2 { margin-top: 0; }
-        button {
-            background-color: var(--tg-theme-button-color, #3390ec);
-            color: var(--tg-theme-button-text-color, #fff);
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 15px;
+
+        .container {
+            padding: 20px;
+            flex-grow: 1;
+        }
+
+        .card {
+            background-color: var(--secondary-bg);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        input, select {
             width: 100%;
+            padding: 10px;
+            border: 1px solid var(--hint-color);
+            border-radius: 8px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            box-sizing: border-box;
+            font-size: 16px;
         }
-        button:active { opacity: 0.8; }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            background-color: #4caf50;
+            color: white;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 12px;
+            color: var(--hint-color);
+        }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h2 id="user-name">کاربر مهمان</h2>
-        <p>به وب‌اپ روتینت خوش آمدید.</p>
-        <button id="main-btn" onclick="submitData()">ثبت اطلاعات</button>
+
+    <div class="header">
+        <h1 style="margin: 0;">AutoMin Bot</h1>
+        <p style="margin: 5px 0 0 0; opacity: 0.9;">پنل مدیریت هوشمند روتینت</p>
     </div>
 
+    <div class="container">
+        <!-- User Info Card -->
+        <div class="card">
+            <h3 style="margin-top: 0;">اطلاعات کاربری</h3>
+            <p><strong>نام:</strong> <span id="user-fullname">در حال دریافت...</span></p>
+            <p><strong>آیدی تلگرام:</strong> <span id="user-id">---</span></p>
+            <span class="status-badge">وضعیت: آنلاین</span>
+        </div>
+
+        <!-- Interaction Form -->
+        <div class="card">
+            <h3 style="margin-top: 0;">ثبت درخواست جدید</h3>
+            <div class="form-group">
+                <label for="service-type">نوع سرویس:</label>
+                <select id="service-type">
+                    <option value="automation">اتوماسیون محتوا</option>
+                    <option value="bot_management">مدیریت بات</option>
+                    <option value="support">پشتیبانی فنی</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="description">توضیحات:</label>
+                <input type="text" id="description" placeholder="متن درخواست خود را وارد کنید...">
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        Powered by Routinet & Telegram Serverless
+    </footer>
+
     <script>
-        // دریافت نمونه وب‌اپ تلگرام
         const tg = window.Telegram.WebApp;
 
-        // گسترش اپلیکیشن به تمام صفحه
+        // تنظیمات اولیه
         tg.expand();
+        tg.ready();
 
-        // نمایش نام کاربر اگر در دسترس باشد
+        // دریافت اطلاعات کاربر
         const user = tg.initDataUnsafe.user;
-        if (user && user.first_name) {
-            document.getElementById('user-name').innerText = user.first_name;
+        
+        if (user) {
+            document.getElementById('user-fullname').innerText = `${user.first_name} ${user.last_name || ''}`;
+            document.getElementById('user-id').innerText = user.id;
+        } else {
+            document.getElementById('user-fullname').innerText = "کاربر ناشناس";
         }
 
-        // تنظیم رنگ دکمه اصلی تلگرام (اختیاری)
-        tg.MainButton.setText("ارسال نهایی");
-        tg.MainButton.onClick(() => {
-            submitData();
-        });
-        
-        // نمایش دکمه اصلی تلگرام
+        // تنظیم دکمه اصلی (MainButton)
+        tg.MainButton.setText("ثبت نهایی درخواست");
         tg.MainButton.show();
 
-        function submitData() {
-            const data = JSON.stringify({
-                action: "webapp_submit",
-                timestamp: new Date().toISOString(),
-                userId: user ? user.id : "unknown"
-            });
+        // هندل کردن کلیک روی دکمه اصلی
+        tg.MainButton.onClick(() => {
+            const serviceType = document.getElementById('service-type').value;
+            const description = document.getElementById('description').value;
 
-            // ارسال داده به بات (که روی سرورلس تلگرام اجرا می‌شود)
-            tg.sendData(data);
-            
-            // بستن پنجره بعد از ارسال
-            setTimeout(() => tg.close(), 500);
-        }
+            if (!description) {
+                tg.showAlert("لطفاً توضیحات را وارد کنید.");
+                return;
+            }
+
+            const requestData = {
+                type: "new_request",
+                service: serviceType,
+                desc: description,
+                userId: user ? user.id : 0,
+                timestamp: Date.now()
+            };
+
+            // ارسال داده به بات (Serverless)
+            tg.sendData(JSON.stringify(requestData));
+        });
+
+        // تغییر رنگ دکمه اصلی بر اساس ورودی
+        document.getElementById('description').addEventListener('input', (e) => {
+            if (e.target.value.length > 0) {
+                tg.MainButton.enable();
+                tg.MainButton.setParams({ color: '#2481cc' });
+            } else {
+                tg.MainButton.setParams({ color: '#b0b0b0' });
+            }
+        });
+
     </script>
 </body>
 </html>
