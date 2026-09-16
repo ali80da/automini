@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AutoMin WebApp</title>
+    <!-- اسکریپت رسمی تلگرام -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            /* استفاده از متغیرهای رنگی تلگرام برای هماهنگی کامل */
+            background-color: var(--tg-theme-bg-color, #fff);
+            color: var(--tg-theme-text-color, #000);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .card {
+            background-color: var(--tg-theme-secondary-bg-color, #f0f0f0);
+            padding: 20px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 300px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h2 { margin-top: 0; }
+        button {
+            background-color: var(--tg-theme-button-color, #3390ec);
+            color: var(--tg-theme-button-text-color, #fff);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+        }
+        button:active { opacity: 0.8; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2 id="user-name">کاربر مهمان</h2>
+        <p>به وب‌اپ روتینت خوش آمدید.</p>
+        <button id="main-btn" onclick="submitData()">ثبت اطلاعات</button>
+    </div>
+
+    <script>
+        // دریافت نمونه وب‌اپ تلگرام
+        const tg = window.Telegram.WebApp;
+
+        // گسترش اپلیکیشن به تمام صفحه
+        tg.expand();
+
+        // نمایش نام کاربر اگر در دسترس باشد
+        const user = tg.initDataUnsafe.user;
+        if (user && user.first_name) {
+            document.getElementById('user-name').innerText = user.first_name;
+        }
+
+        // تنظیم رنگ دکمه اصلی تلگرام (اختیاری)
+        tg.MainButton.setText("ارسال نهایی");
+        tg.MainButton.onClick(() => {
+            submitData();
+        });
+        
+        // نمایش دکمه اصلی تلگرام
+        tg.MainButton.show();
+
+        function submitData() {
+            const data = JSON.stringify({
+                action: "webapp_submit",
+                timestamp: new Date().toISOString(),
+                userId: user ? user.id : "unknown"
+            });
+
+            // ارسال داده به بات (که روی سرورلس تلگرام اجرا می‌شود)
+            tg.sendData(data);
+            
+            // بستن پنجره بعد از ارسال
+            setTimeout(() => tg.close(), 500);
+        }
+    </script>
+</body>
+</html>
