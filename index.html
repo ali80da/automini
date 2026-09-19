@@ -1,186 +1,197 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Routinet Mini App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Routinet Nexus</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: var(--tg-theme-bg-color, #ffffff);
-            --text-color: var(--tg-theme-text-color, #000000);
-            --hint-color: var(--tg-theme-hint-color, #999999);
-            --link-color: var(--tg-theme-link-color, #2481cc);
-            --button-color: var(--tg-theme-button-color, #2481cc);
-            --button-text-color: var(--tg-theme-button-text-color, #ffffff);
-            --secondary-bg: var(--tg-theme-secondary-bg-color, #f1f1f1);
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --glass-bg: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --primary-accent: #007AFF;
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-gradient: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+                --glass-bg: rgba(20, 20, 20, 0.7);
+                --glass-border: rgba(255, 255, 255, 0.1);
+                --text-primary: #ffffff;
+                --text-secondary: #a1a1a6;
+            }
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
-            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-primary);
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app-container {
+            padding: 24px;
+            max-width: 500px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .header {
-            background-color: var(--button-color);
-            color: var(--button-text-color);
-            padding: 20px;
             text-align: center;
-            border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
         }
 
-        .container {
-            padding: 20px;
-            flex-grow: 1;
+        .avatar-ring {
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #007AFF, #5AC8FA);
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0, 122, 255, 0.3);
         }
+
+        .avatar-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #fff;
+            object-fit: cover;
+            border: 4px solid var(--glass-bg);
+        }
+
+        h1 { font-weight: 800; font-size: 32px; margin: 0; letter-spacing: -1px; }
+        .subtitle { color: var(--text-secondary); font-size: 16px; margin-top: 8px; }
 
         .card {
-            background-color: var(--secondary-bg);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-lg);
+            transition: transform 0.2s ease;
         }
 
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        input, select {
+        .input-group { margin-top: 20px; }
+        label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        input {
             width: 100%;
-            padding: 10px;
-            border: 1px solid var(--hint-color);
-            border-radius: 8px;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            padding: 18px;
+            border-radius: 18px;
+            border: 1px solid transparent;
+            background: rgba(120, 120, 128, 0.1);
+            color: var(--text-primary);
+            font-size: 17px;
+            outline: none;
+            transition: all 0.3s ease;
             box-sizing: border-box;
-            font-size: 16px;
         }
 
-        .status-badge {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 15px;
-            background-color: #4caf50;
-            color: white;
-            font-size: 12px;
-            margin-top: 5px;
-        }
+        input:focus { background: rgba(120, 120, 128, 0.15); border-color: var(--primary-accent); }
 
-        footer {
-            text-align: center;
-            padding: 15px;
-            font-size: 12px;
-            color: var(--hint-color);
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1 style="margin: 0;">AutoMin Bot</h1>
-        <p style="margin: 5px 0 0 0; opacity: 0.9;">پنل مدیریت هوشمند روتینت</p>
-    </div>
-
-    <div class="container">
-        <!-- User Info Card -->
-        <div class="card">
-            <h3 style="margin-top: 0;">اطلاعات کاربری</h3>
-            <p><strong>نام:</strong> <span id="user-fullname">در حال دریافت...</span></p>
-            <p><strong>آیدی تلگرام:</strong> <span id="user-id">---</span></p>
-            <span class="status-badge">وضعیت: آنلاین</span>
+    <div class="app-container">
+        <div class="header">
+            <div class="avatar-ring">
+                <img src="https://ui-avatars.com/api/?name=User&background=random" alt="User" class="avatar-img" id="user-avatar">
+            </div>
+            <h1 id="greeting">Welcome</h1>
+            <p class="subtitle">Routinet Secure Gateway v3.0</p>
         </div>
 
-        <!-- Interaction Form -->
         <div class="card">
-            <h3 style="margin-top: 0;">ثبت درخواست جدید</h3>
-            <div class="form-group">
-                <label for="service-type">نوع سرویس:</label>
-                <select id="service-type">
-                    <option value="automation">اتوماسیون محتوا</option>
-                    <option value="bot_management">مدیریت بات</option>
-                    <option value="support">پشتیبانی فنی</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="description">توضیحات:</label>
-                <input type="text" id="description" placeholder="متن درخواست خود را وارد کنید...">
+            <h3 style="margin-top: 0; font-weight: 600;">Command Center</h3>
+            <div class="input-group">
+                <label for="command">Enter your request</label>
+                <input type="text" id="command" placeholder="e.g., Start automation..." autocomplete="off">
             </div>
         </div>
     </div>
-
-    <footer>
-        Powered by Routinet & Telegram Serverless
-    </footer>
 
     <script>
         const tg = window.Telegram.WebApp;
-
-        // تنظیمات اولیه
+        
+        // 1. Initialization & Expansion
         tg.expand();
         tg.ready();
 
-        // دریافت اطلاعات کاربر
+        // 2. User Data Handling
         const user = tg.initDataUnsafe.user;
-        
+        const greetingEl = document.getElementById('greeting');
+        const avatarEl = document.getElementById('user-avatar');
+
         if (user) {
-            document.getElementById('user-fullname').innerText = `${user.first_name} ${user.last_name || ''}`;
-            document.getElementById('user-id').innerText = user.id;
-        } else {
-            document.getElementById('user-fullname').innerText = "کاربر ناشناس";
+            greetingEl.innerText = `Hello, ${user.first_name}`;
+            avatarEl.src = user.photo_url || `https://ui-avatars.com/api/?name=${user.first_name}&background=random`;
         }
 
-        // تنظیم دکمه اصلی (MainButton)
-        tg.MainButton.setText("ثبت نهایی درخواست");
-        tg.MainButton.show();
+        // 3. Main Button Setup (The Primary Interaction Point)
+        tg.MainButton.setParams({
+            text: 'EXECUTE COMMAND',
+            color: '#007AFF',
+            text_color: '#FFFFFF',
+            is_active: false, // Disabled until input is provided
+            is_visible: true
+        });
 
-        // هندل کردن کلیک روی دکمه اصلی
-        tg.MainButton.onClick(() => {
-            const serviceType = document.getElementById('service-type').value;
-            const description = document.getElementById('description').value;
-
-            if (!description) {
-                tg.showAlert("لطفاً توضیحات را وارد کنید.");
-                return;
+        // 4. Real-time Input Validation
+        const commandInput = document.getElementById('command');
+        
+        commandInput.addEventListener('input', (e) => {
+            const val = e.target.value.trim();
+            if (val.length > 0) {
+                tg.MainButton.setText(`RUN: ${val.toUpperCase()}`);
+                tg.MainButton.enable();
+            } else {
+                tg.MainButton.setText('EXECUTE COMMAND');
+                tg.MainButton.disable();
             }
+        });
 
-            const requestData = {
-                type: "new_request",
-                service: serviceType,
-                desc: description,
-                userId: user ? user.id : 0,
-                timestamp: Date.now()
+        // 5. Data Submission Logic
+        tg.MainButton.onClick(() => {
+            const payload = {
+                action: 'webapp_command',
+                data: commandInput.value.trim(),
+                userId: user ? user.id : null,
+                timestamp: new Date().toISOString()
             };
 
-            // ارسال داده به بات (Serverless)
-            tg.sendData(JSON.stringify(requestData));
+            // Haptic Feedback for Premium Feel
+            tg.HapticFeedback.notificationOccurred('success');
+            
+            // Send to Bot
+            tg.sendData(JSON.stringify(payload));
         });
 
-        // تغییر رنگ دکمه اصلی بر اساس ورودی
-        document.getElementById('description').addEventListener('input', (e) => {
-            if (e.target.value.length > 0) {
-                tg.MainButton.enable();
-                tg.MainButton.setParams({ color: '#2481cc' });
-            } else {
-                tg.MainButton.setParams({ color: '#b0b0b0' });
-            }
+        // 6. Dynamic Theme Adaptation
+        tg.onEvent('themeChanged', function() {
+            document.documentElement.style.setProperty('--bg-gradient', `linear-gradient(135deg, ${tg.themeParams.bg_color} 0%, ${tg.themeParams.secondary_bg_color} 100%)`);
         });
-
     </script>
 </body>
 </html>
